@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.silence.admin.infrastructure.dao.RoleMapper">
+
+
+    <insert id="addPermissionForRole" useGeneratedKeys="true" keyProperty="id">
+        insert into t_role_permission
+        values
+        <foreach collection="permissionIds" item="permissionId" index="index" separator=",">
+            (#{roleId}, #{permissionId})
+        </foreach>
+    </insert>
+
+    <delete id="deletePermissionForRole">
+        delete from
+        t_role_permission
+        where role_id =
+        #{roleId}
+        and
+        permission_id in
+        <foreach collection="permissionIds" item="permissionId" open="(" close=")" separator=",">
+            #{permissionId}
+        </foreach>
+    </delete>
+
+
+    <insert id="addRole" keyProperty="id">
+        insert into t_role
+        values (#{id}, #{roleName}, #{description}, NOW(), NULL, #{status})
+    </insert>
+
+    <update id="updateRole">
+        update t_role
+        set role_name   = #{roleName},
+            description=#{description},
+            update_time = NOW()
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRole">
+        delete
+        t_role
+        where id =
+        #{id}
+    </delete>
+
+    <resultMap id="roleMap" type="com.silence.admin.infrastructure.repository.DO.RoleDO">
+        <id column="id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="description" property="description"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <collection property="permissionDos"
+                    ofType="com.silence.admin.infrastructure.repository.DO.PermissionDO">
+            <result column="url" property="url"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="roleList" resultMap="roleMap">
+        select t.id,
+               t.role_name,
+               t.description,
+               t.create_time,
+               t.update_time,
+               p.url
+        from t_role t
+                 LEFT JOIN t_role_permission tp ON t.id = tp.role_id
+                 LEFT JOIN t_permission p ON tp.permission_id = p.id and p.type = 1;
+    </select>
+
+    <select id="getRolePermissionsByRoleId" resultType="java.lang.Long">
+        select permission_id
+        from t_role_permission
+        where role_id = #{id};
+    </select>
+
+</mapper>

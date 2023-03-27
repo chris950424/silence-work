@@ -1,0 +1,72 @@
+spring:
+  application:
+    name: silence-product
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        # 配置文件的环境
+        group: ${spring.profiles.active}
+        # 配置文件的格式
+        file-extension: yaml
+        # 配置中心的地址
+        server-addr: 106.13.192.32:8848
+        # 配置文件prefix
+        prefix: ${spring.application.name}
+        #命名空间
+        namespace: silence
+
+      discovery:
+        server-addr: 106.13.192.32:8848
+        group: ${spring.profiles.active}
+        namespace: silence
+    alibaba:
+      seata:   # seata配置
+        tx-service-group: my_test_tx_group
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  datasource:
+    url: jdbc:mysql://182.61.134.140:3306/user_db?useUnicode=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: Haha@123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.silence.admin.entity.po
+
+
+secure:
+  white-list:
+    - "/r2/**"              # 健康检查
+  need-check:
+    - "/authority/**"
+
+server:
+  port: 8092
+logging:
+  level:
+    com.alibaba.nacos: WARN
+
+seata:
+  enabled: true
+  application-id: ${spring.application.name}
+  tx-service-group: my_test_tx_group
+  # 是否开启数据源自动代理 如果不开启设置为false
+  enable-auto-data-source-proxy: true
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 106.13.192.32:8848
+      namespace: silence
+      group: SEATA_GROUP
+  config:
+    type: nacos
+    nacos:
+      server-addr: 106.13.192.32:8848
+      group: SEATA_GROUP

@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.silence.order.infrastructure.job.autoconfigure.RegCentreAutoConfiguration,\
+com.silence.order.infrastructure.job.autoconfigure.JobAutoConfiguration

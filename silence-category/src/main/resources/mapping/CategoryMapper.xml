@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.silence.category.infrastructure.dao.CategoryMapper">
+
+
+    <insert id="addAttribute" useGeneratedKeys="true" keyProperty="id">
+        insert into t_category_attribute
+        values (#{categoryId}, #{attributeType}, #{attribute}, #{attributeMoney}, 1)
+    </insert>
+
+    <update id="updateAttribute">
+        update  t_category_attribute
+        set status = -status
+        where  attribute_id = #{attributeId};
+    </update>
+
+    <insert id="insertCategory" useGeneratedKeys="true" keyProperty="id">
+        insert into t_category(`name`,`pid`,`create_time`,`status`)
+        value (#{name}, #{pid}, NOW(),1)
+    </insert>
+
+    <update id="updateCategory">
+        update  t_category
+        set name = #{name},update_time = NOW()
+        where  id = #{id};
+    </update>
+
+    <resultMap id="categoryMap" type="com.silence.category.infrastructure.repository.DO.CategoryDO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pid" property="pid"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <collection property="attributes"
+                    ofType="com.silence.category.infrastructure.repository.DO.CategoryAttributeDO">
+            <result column="attribute_id" property="attributeId"/>
+            <result column="category_id" property="categoryId"/>
+            <result column="attribute_type" property="attributeType"/>
+            <result column="attribute" property="attribute"/>
+            <result column="attribute_money" property="attributeMoney"/>
+            <result column="attribute_status" property="attributeStatus"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectCategoryList" resultMap="categoryMap">
+        SELECT c.id,
+               c.name,
+               c.pid,
+               c.create_time,
+               c.update_time,
+               c.status,
+               ca.attribute_id,
+               ca.category_id,
+               ca.attribute_type,
+               ca.attribute,
+               ca.attribute_money,
+               ca.attribute_status
+        FROM t_category c
+                 LEFT JOIN t_category_attribute ca on c.id = ca.category_id;
+    </select>
+
+
+    <select id="selectCategoryById" resultMap="categoryMap">
+        SELECT c.id, c.name, c.pid, c.create_time, c.update_time,c.status,
+        ca.category_id,ca.attribute_type,ca.attribute,ca.attribute_money,ca.status
+        FROM t_category c
+        LEFT JOIN t_category_attribute ca on c.id = ca.category_id
+        <where>
+            c.id = #{id}
+        </where>
+    </select>
+</mapper>

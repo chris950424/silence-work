@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.silence.admin.infrastructure.dao.PermissionMapper">
+
+
+    <select id="getPermissionList" resultType="com.silence.admin.infrastructure.repository.DO.PermissionDO">
+        select  *  from t_permission;
+    </select>
+
+
+    <insert id="addPermission" useGeneratedKeys="true" keyProperty="id">
+        insert into t_permission
+        values (#{po.id}, #{po.pid}, #{po.type},  #{po.code},#{po.description}, #{po.url})
+    </insert>
+
+
+    <update id="updatePermission">
+        update t_permission
+        set pid        = #{po.pid},
+            code       = #{po.code},
+            description=#{po.description},
+            url        = #{po.url}
+        where id = #{po.id}
+    </update>
+
+    <delete id="deletePermission">
+        delete
+        t_permission
+        where id =
+        #{id}
+    </delete>
+
+</mapper>

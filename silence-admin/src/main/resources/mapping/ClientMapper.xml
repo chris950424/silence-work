@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.silence.admin.infrastructure.dao.ClientMapper">
+
+
+    <insert id="addClient" useGeneratedKeys="true" keyProperty="id">
+        insert into oauth_client_details
+        values (#{clientId}, #{resourceIds}, #{clientSecret}, #{scope},
+                #{authorizedGrantTypes}), #{webServerRedirectUri}), #{authorities}), #{accessTokenValidity}),
+            #{refreshTokenValidity}), NOW(), #{archived}), #{trusted}), #{autoapprove})
+    </insert>
+
+
+    <delete id="deleteClient">
+        delete
+        oauth_client_details
+        where client_id =
+        #{clientId}
+    </delete>
+
+
+</mapper>

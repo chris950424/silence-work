@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: silence-order
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        # 配置文件的环境
+        group: ${spring.profiles.active}
+        # 配置文件的格式
+        file-extension: yaml
+        # 配置中心的地址
+        server-addr: 106.13.192.32:8848
+        # 配置文件prefix
+        prefix: ${spring.application.name}
+        #命名空间
+        namespace: silence
+
+      discovery:
+        server-addr: 106.13.192.32:8848
+        group: ${spring.profiles.active}
+        namespace: silence
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://106.13.192.32:3306/user_db?useUnicode=true&serverTimezone = GMT
+    username: root
+    password: root
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.silence.admin.entity.po
+
+auth:
+  secure:
+    white-list:
+      - "/r2/**"              # 健康检查
+    #      - "/order/**"
+    need-check:
+      - "/authority/**"
+
+server:
+  port: 8088
+
+
+elasticjob:
+  regcenter:
+    serverLists: "120.24.205.36:2181"
+    namespace: order
+    sessionTimeoutMilliseconds: 30000
+    connectionTimeoutMilliseconds: 30000
+
+ws:
+  port: 12000
+
+logging:
+  level:
+    com.alibaba.nacos: WARN
+
+
+seata:
+  enabled: true
+  application-id: silence-order
+  tx-service-group: default_tx_group
+  enable-auto-data-source-proxy: false
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 106.13.192.32:8848
+      group: SEATA_GROUP
+      namespace: fa41a262-49c1-46bf-935c-66c60dbbdf2e
+  config:
+    type: nacos
+    nacos:
+      server-addr: 106.13.192.32:8848
+      namespace: fa41a262-49c1-46bf-935c-66c60dbbdf2e
+      group: SEATA_GROUP
+      data-id: seataServer.properties

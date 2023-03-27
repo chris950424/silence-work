@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.silence.product.infrastructure.dao.ProductMapper">
+
+
+    <insert id="insertAttribute" useGeneratedKeys="true" keyProperty="id">
+        insert into t_product_attribute(`product_id`, `type`, `attribute`, `money`, `status`)
+        values (#{productId}, #{type}, #{attribute}, #{money}, 1)
+    </insert>
+
+    <update id="updateAttribute">
+        update t_product_attribute
+        set status = -status
+        where id = #{id};
+    </update>
+
+    <insert id="insertProduct" useGeneratedKeys="true" keyProperty="id">
+        insert into t_product(`name`, `category_id`, `create_time`, `status`)
+            value (#{name}, #{categoryId}, NOW(),1)
+    </insert>
+
+    <update id="updateProduct">
+        update t_product
+        set name        = #{name},
+            update_time = NOW()
+        where id = #{id};
+    </update>
+
+    <resultMap id="productMap" type="com.silence.product.infrastructure.repository.DO.ProductDO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="status" property="status"/>
+        <collection property="attributes"
+                    ofType="com.silence.product.infrastructure.repository.DO.ProductAttributeDO">
+            <result column="attribute_id" property="id"/>
+            <result column="product_id" property="productId"/>
+            <result column="type" property="type"/>
+            <result column="attribute" property="attribute"/>
+            <result column="money" property="money"/>
+            <result column="attribute_status" property="status"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectProductList" resultMap="productMap">
+        SELECT p.id,
+               p.name,
+               p.category_id,
+               p.create_time,
+               p.update_time,
+               p.status,
+               pa.id     as attribute_id,
+               pa.product_id,
+               pa.type,
+               pa.attribute,
+               pa.money,
+               pa.status as attribute_status
+        FROM t_product p
+                 LEFT JOIN t_product_attribute pa on p.id = pa.product_id;
+    </select>
+
+    <select id="selectProductListByCategoryId" resultMap="productMap">
+        SELECT p.id,
+        p.name,
+        p.category_id,
+        p.create_time,
+        p.update_time,
+        p.status,
+        pa.id as attribute_id ,
+        pa.product_id,
+        pa.type,
+        pa.attribute,
+        pa.money,
+        pa.status as attribute_status
+        FROM t_product p
+        LEFT JOIN t_product_attribute pa on p.id = pa.product_id
+        <where>
+            and p.category_id = #{categoryId}
+        </where>
+    </select>
+
+</mapper>

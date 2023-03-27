@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: silence-gateway
+
+#  zipkin:
+#    base-url: http://106.13.192.32:9411
+
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        # 配置文件的环境
+        group: dev
+        # 配置文件的格式
+        file-extension: yaml
+        # 配置中心的地址
+        server-addr: 106.13.192.32:8848
+        # 配置文件prefix
+        prefix: ${spring.application.name}
+        #命名空间
+        namespace: silence
+
+      discovery:
+        server-addr: 106.13.192.32:8848
+        group: dev
+        namespace: silence
+    gateway:
+      routes:
+        - id: silence-auth # 路由的id,没有规定规则但要求唯一,建议配合服务名
+          #匹配后提供服务的路由地址
+          uri: lb://silence-auth
+          predicates:
+            - Path=/silence-auth/** # 断言，路径相匹配的进行路由
+          filters:
+            - StripPrefix=1
+            - AddResponseHeader=X-Response-Default-Foo, Default-Bar
+
+        - id: silence-admin # 路由的id,没有规定规则但要求唯一,建议配合服务名
+          #匹配后提供服务的路由地址
+          uri: lb://silence-admin
+          predicates:
+            - Path=/silence-admin/** # 断言，路径相匹配的进行路由
+          filters:
+            - StripPrefix=1
+            - AddResponseHeader=X-Response-Default-Foo, Default-Bar
+
+        - id: silence-category # 路由的id,没有规定规则但要求唯一,建议配合服务名
+          #匹配后提供服务的路由地址
+          uri: lb://silence-category
+          predicates:
+            - Path=/silence-category/** # 断言，路径相匹配的进行路由
+          filters:
+            - StripPrefix=1
+            - AddResponseHeader=X-Response-Default-Foo, Default-Bar
+server:
+  port: 8071
+
+gateway:
+  secure:
+    base-url: "http://106.13.192.32:9071"
+
+logging:
+  level:
+    com.alibaba.nacos: WARN

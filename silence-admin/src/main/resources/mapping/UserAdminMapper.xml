@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.silence.admin.infrastructure.dao.UserAdminMapper">
+
+
+    <select id="userAdminList" resultType="com.silence.admin.infrastructure.repository.DO.UserAdminDO">
+        SELECT u.*,
+               r.role_name as roleName
+        FROM t_admin_user u
+                 LEFT JOIN t_user_role ur ON u.id = ur.user_id
+                 LEFT JOIN t_role r ON ur.role_id = r.id;
+    </select>
+
+
+    <insert id="addUserAdmin" useGeneratedKeys="true" keyProperty="id">
+        insert into t_admin_user
+        values (#{id}, #{username}, #{password}, #{fullname}, #{mobile})
+    </insert>
+
+
+    <insert id="addRoleForUserAdmin" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user_role
+        values
+        <foreach collection="roleIds" item="roleId" index="index" separator=",">
+            (#{id}, #{roleId},NOW(),NULL)
+        </foreach>
+    </insert>
+
+    <delete id="deleteRoleForUserAdmin">
+        delete from t_user_role
+        where user_id =
+        #{id}
+        and
+        role_id in
+        <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+            #{roleId}
+        </foreach>
+    </delete>
+
+    <select id="getRoleForUserAdmin"
+            resultType="java.lang.Long">
+        select role_id
+        from t_user_role
+        where user_id = #{userId}
+    </select>
+    <update id="updateUserAdmin">
+        update t_admin_user
+        set username = #{username},
+            password = #{password},
+            fullname=#{fullname},
+            mobile   = #{mobile}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserAdmin">
+        delete
+        t_admin_user
+        where id =
+        #{id}
+    </delete>
+
+    <select id="getUserAdminByUserAdminName"
+            resultType="com.silence.admin.infrastructure.repository.DO.UserAdminDO">
+        select *
+        from t_admin_user
+        where username = #{username}
+    </select>
+
+    <select id="findPermissionsByUserAdminId" resultType="java.lang.String">
+        SELECT p.code
+        FROM t_admin_user u,
+             t_user_role ur,
+             t_role_permission rp,
+             t_permission p
+        WHERE u.id = ur.user_id
+          AND ur.role_id = rp.role_id
+          AND rp.permission_id = p.id
+          AND u.id = #{id}
+    </select>
+</mapper>

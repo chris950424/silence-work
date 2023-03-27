@@ -1,0 +1,74 @@
+spring:
+  application:
+    name: silence-pay
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        # 配置文件的环境
+        group: ${spring.profiles.active}
+        # 配置文件的格式
+        file-extension: yaml
+        # 配置中心的地址
+        server-addr: 106.13.192.32:8848
+        # 配置文件prefix
+        prefix: ${spring.application.name}
+        #命名空间
+        namespace: silence
+
+      discovery:
+        server-addr: 106.13.192.32:8848
+        group: ${spring.profiles.active}
+        namespace: silence
+
+  mvc:
+    throw-exception-if-no-handler-found: true
+
+  datasource:
+    url: jdbc:mysql://106.13.192.32:3306/user_db?useUnicode=true
+    username: silence
+    password: Mypass@123456
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+    password:
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.silence.admin.entity.po
+
+
+
+secure:
+  white-list:
+    - "/pay/**"              # 健康检查
+  need-check:
+    - "/authority/**"
+
+server:
+  port: 8093
+
+#elasticjob:
+#  regcenter:
+#    serverLists: "120.24.205.36:2181"
+#    namespace: order
+#    sessionTimeoutMilliseconds: 30000
+#    connectionTimeoutMilliseconds: 30000
+
+
+wechat:
+  pay:
+    appId: wx0a27d3dc5c23946a
+    mrchId: 1485402842
+    appKey: GdshenzhenQicaixiangyunCaiyin001
+    notifyUrl: http://silence.vaiwan.com/silence-pay/pay/wechatPayCallback
+    domain: https://api.mch.weixin.qq.com/
+    signType: MD5
+
+
+
+logging:
+  level:
+    com.alibaba.nacos: WARN

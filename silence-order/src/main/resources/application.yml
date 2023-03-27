@@ -1,0 +1,42 @@
+#spring:
+#  datasource:
+#    # 动态数据源配置
+#    dynamic:
+#      datasource:
+#        master:
+#          type: com.alibaba.druid.pool.DruidDataSource
+#          driver-class-name: com.mysql.cj.jdbc.Driver
+#          url: jdbc:mysql://106.13.192.32:3306/user_db?useUnicode=true&serverTimezone = GMT
+#          username: root
+#          password: root
+#      # 指定默认数据源名称
+#      primary: master
+#      seata: true
+#  # 分表配置
+#  sharding-sphere:
+#    datasource:
+#      names: sharding-order-system
+#      sharding-order-system:
+#        type: com.zaxxer.hikari.HikariDataSource
+#        driverClassName: com.mysql.cj.jdbc.Driver
+#        jdbc-url: jdbc:mysql://106.13.192.32:3306/user_db?useUnicode=true&serverTimezone = GMT
+#        username: root
+#        password: root
+#    props:
+#      # 日志显示SQL
+#      sql.show: true
+#    sharding:
+#      tables:
+#        # 订单表 分表：20
+#        t_order:
+#          # 真实表 order_0
+#          actualDataNodes: sharding-order-system.t_order_$->{0..4}
+#          # 分库策略
+#          databaseStrategy:
+#            none:
+#          # 分表策略
+#          tableStrategy:
+#            inline:
+#              shardingColumn: order_no
+#              # 分片算法行表达式，需符合groovy语法 '& Integer.MAX_VALUE' 位运算使hash值为正数
+#              algorithmExpression: t_order_$->{(order_no.hashCode() & Long.MAX_VALUE) % 5}
